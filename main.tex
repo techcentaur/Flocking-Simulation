@@ -1,0 +1,149 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+
+\title{Step-I : Mathematical Modeling}								% Title
+\author{Ankit Solanki and Sumit Ghosh}								% Author
+\date{\today}											% Date
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+	\centering
+    \vspace*{0.5 cm}
+    \includegraphics[scale = 0.05]{IITD.png}\\[1.0 cm]	% University Logo
+    \textsc{\LARGE Indian Institute of Technology, Delhi}\\[2.0 cm]	% University Name
+	\textsc{\Large COP290}\\[0.5 cm]				% Course Code
+	\textsc{\large Design Practices}\\[0.5 cm]				% Course Name
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Author:}\\
+			\theauthor
+			\end{flushleft}
+			\end{minipage}~
+			\begin{minipage}{0.4\textwidth}
+			\begin{flushright} \large
+			\emph{Student Number:}
+			2016CS50401, 2016CS50400
+            % Your Student Number
+		\end{flushright}
+	\end{minipage}\\[2 cm]
+	
+	{\large \thedate}\\[2 cm]
+ 
+	\vfill
+	
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Part I: Flocking Behavior}
+Animal behavior has always been a source of amazement to mankind. In many areas the abilities of the animals surpasses the abilities of us humans, but with the use of technology we have been able to best the animals in more and more areas. In this implementation we will try to simulate the flocking behavior seen in starling murmuration using the structure of Reynolds Boids algorithm.
+
+\subsection{Starling Murmuration}
+Starlings are small to medium-sized passerine birds in the family Sturnidae. It is known as murmuration, when a huge flocks of starling in migration form shape-shifting flight patterns.
+
+\subsection{Flocking Behavior}
+Flocking is a the motion of birds together and flocking behavior is a type of behavior exhibited when a group of birds, called a flock, are in flight.
+
+\subsection{Boids}
+Boids is the term that is commonly used to mean the computer simulation and representation of a bird in flocking simulations. The term is first floated by Craig Reynolds.
+
+\subsection{Emergent Behavior}
+When individual objects interact with each other directly or indirectly to create much more complex results. Reynolds Boids algorithm can be said to create an emergent behavior.
+
+%----------------------------
+\newpage
+
+\section{Part II: Boid Implementaion (Pseudocode)}
+
+The three rules acting as pillars in the realm of modern flocking simulation as presented by Craig Reynolds are - 
+\newline
+\newline
+1. \textbf{Separation} : Steer to avoid crowding local flockmates.
+\newline
+2. \textbf{Alignment} : Steer towards the average heading of local flockmates.
+\newline
+3. \textbf{Cohesion} : Steer to move toward the average position of local flockmates.
+
+We will here try to simulate the behavior of starlings using these 3 basic rules. 
+
+\subsection{Separation}
+Movement to avoid crowding local flock-mates. If a flocking behavior is to be simulated, it must also avoid collisions between the bird like objects. This rule attempts steer the boid away from possible collisions. Also it is important that this rule shall come into play when boids are close otherwise there will be always a resistance force when a flock is intended to form.
+\newline
+
+We will take a boid and if it's within a defined small distance of its neighboring boid then move it far away upto a certain amount. We can subtract it from a vector c the displacement of each boid which is near by.\newline
+	
+    function(boid B){
+		Vector c = 0\newline
+
+		for each b in boids\newline
+			if b != B then\newline
+				if |b.position - B.position| < 100 then\newline
+					c = c - (b.position - B.position)\newline
+				end if\newline
+			end if\newline
+		end\newline
+		RETURN c
+
+	END PROCEDURE
+It may seem odd that we choose to simply double the distance from nearby boids, as it means that boids which are very close are not immediately "repelled". Remember that if two boids are near each other, this rule will be applied to both of them. They will be slightly steered away from each other, and at the next time step if they are still near each other they will be pushed further apart. Hence, the resultant repulsion takes the form of a smooth acceleration. It is a good idea to maintain a principle of ensuring smooth motion. If two boids are very close to each other it's probably because they have been flying very quickly towards each other, considering that their previous motion has also been restrained by this rule. Suddenly jerking them away from each other, such that they each have their motion reversed, would appear unnatural, as if they bounced off each other's invisible force fields. Instead, we have them slow down and accelerate away from each other until they are far enough apart for our liking.
+
+
+\newpage
+
+% \section{Step II: Software requirement specification}
+% \newpage
+
+% \section{Step III: Software design document}
+% \newpage
+
+% \section{Step IV: Implementation and software documentation}
+% \newpage
+
+% \section{Step V: Testing and fine tuning}
+% \newpage
+
+% \section{Step VI: Report}
+% \newpage
+% * <ankit03june@gmail.com> 2018-01-16T19:00:53.688Z:
+%
+% ^.
+% * <ankit03june@gmail.com> 2018-01-16T19:00:45.810Z:
+%
+% ^.
+% \bibliographystyle{plain}
+% \bibliography{biblist}
+
+\end{document}
