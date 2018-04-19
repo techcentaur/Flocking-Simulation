@@ -105,7 +105,7 @@ Movement to avoid crowding local flock-mates. If a flocking behavior is to be si
 
 We will take a boid and if it's within a defined small distance of its neighboring boid then move it far away upto a certain amount. We can subtract it from a vector c the displacement of each boid which is near by.\newline
 	
-    function(boid B){
+    function(boid B){\newline
 		Vector c = 0\newline
 
 		for each b in boids\newline
@@ -115,25 +115,61 @@ We will take a boid and if it's within a defined small distance of its neighbori
 				end if\newline
 			end if\newline
 		end\newline
-		RETURN c
+		return c\newline
+	}\newline
 
-	END PROCEDURE
-It may seem odd that we choose to simply double the distance from nearby boids, as it means that boids which are very close are not immediately "repelled". Remember that if two boids are near each other, this rule will be applied to both of them. They will be slightly steered away from each other, and at the next time step if they are still near each other they will be pushed further apart. Hence, the resultant repulsion takes the form of a smooth acceleration. It is a good idea to maintain a principle of ensuring smooth motion. If two boids are very close to each other it's probably because they have been flying very quickly towards each other, considering that their previous motion has also been restrained by this rule. Suddenly jerking them away from each other, such that they each have their motion reversed, would appear unnatural, as if they bounced off each other's invisible force fields. Instead, we have them slow down and accelerate away from each other until they are far enough apart for our liking.
+Also, if two boids are near each other, this rule will be applied to both of them. They will be slightly steered away from each other, and at the next time step if they are still near each other they will be pushed further apart.It will be seen in the simulation in the form of a smooth acceleration and will seem closer to reality because in the actual flocking birds don't get repelled in a jerking manner, they separate in a smooth and continous manner.
 
+\subsection{Cohesion}
 
+Movement of boid towards the average position of local flock-mates. Cohesion as a rule will keep the flock together, without it there would not be any flocking at all.\newline
+
+Assume we have n number of boid objects in a local-flock, namely b1, b2, ..., bn. Also, the position of a boid b is denoted b.position. Then the average position of mass in the flock shall be\newline
+
+	c = (b1.position + b2.position + ... + bn.position) / (n-1)\newline
+
+where positions are vector. c is also known as 'percieved center' as it is not actual center of the flock but of the local flock.\newline
+
+	function (boid B){\newline
+		Vector pc\newline
+		for each b in boids\newline
+			if b != B then\newline
+				pc = pc + b.position\newline
+			end if\newline
+		end\newline
+		pc = pc / n-1\newline
+		return (pc - B.position) / 100\newline
+}
+It will move the boid 1\% closer to the center of the local group.
 \newpage
 
-% \section{Step II: Software requirement specification}
-% \newpage
+\subsection{Alignment}
+Movement of boid towards the average heading of local flockmates. This rule tries to make
+the boids mimic each others in case of speed, acceleration and rotation(movement on axis). If this rule was not used the boids
+would just get closer and not have formed the mesmerising flocking patterns that we notice and adore. \newline
 
-% \section{Step III: Software design document}
-% \newpage
+In this rule, we will average the velocities. We shall introduce a 'perceived velocity' i.e. the average velocity of local group and then add a certain part of it to the boid's current velocity.
 
-% \section{Step IV: Implementation and software documentation}
-% \newpage
+	function(boid B){ \newline
 
-% \section{Step V: Testing and fine tuning}
-% \newpage
+		Vector pv \newline
+		int x (comment :x is the amount by which we shall increase the boid velocity) \newline
+
+		for each b in boids \newline
+			if b != B then \newline
+				pv = pv + b.velocity \newline
+			end if \newline
+		end \newline
+		pv = pv / n-1 \newline
+
+		return (pv - B.velocity) / x \newline
+
+	}
+
+\textbf{Note : } These were the 3 rules originally introduced by Craig Reynolds in his computer simulation, we only need these 3 rules to implement the basic flocking simulation constantly flying. However, we shall be adding some more features to it.
+
+
+
 
 % \section{Step VI: Report}
 % \newpage
