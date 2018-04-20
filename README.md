@@ -36,3 +36,6 @@ http-server -c-1
 - [Mathematical model of flocking behavior](http://www.diva-portal.org/smash/get/diva2:561907/FULLTEXT03.pdf)
 - [Boids-algorithm - Pseudocode](http://www.kfish.org/boids/pseudocode.html)
 - [Research Paper - Craig Reynold's simulation](http://www.csc.kth.se/utbildning/kandidatexjobb/datateknik/2011/rapport/erneholm_carl-oscar_K11044.pdf)
+
+## Overleaf mathematical model read and edit
+[link](https://www.overleaf.com/15649991qxqnpwqzxvjr)
