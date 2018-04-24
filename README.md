@@ -7,16 +7,20 @@ Flocking is a the motion of birds together and flocking behavior is a type of be
 #### Starling mumuration
 Starlings are small to medium-sized passerine birds in the family Sturnidae. It is known as murmuration, when a huge flocks of starling in migration form shape-shifting flight patterns. A good example is shown below - 
 
-## Mathematical Modeling
 
-#### Ovreleaf LaTex editor
-click [here](https://www.overleaf.com/15649991qxqnpwqzxvjr)
+## Folders usage
 
+#### js-libs
+The static javascript library files from three.js and soome from webGL-js.
 
-#### Scattering of starling by a predator (a falcon in this case).
+#### shader
+Shader programs are the ones that are compiled in graphical processing unit.
 
-A [video](https://www.youtube.com/watch?v=b8eZJnbDHIg) of falcon attack on flock of starling.
+#### css
+Used CSS stylesheets in the markup code.
 
+#### img
+Images that shall be used in the front-end code.
 
 ## Running locally
 
@@ -35,10 +39,23 @@ http-server -c-1
 
 ```
 
+or 
+
+Just run the `index.html` file, embedding the javascript files in it.
+
 ## Informational Documents
 
 - [Mathematical model of flocking behavior](http://www.diva-portal.org/smash/get/diva2:561907/FULLTEXT03.pdf)
 - [Boids-algorithm - Pseudocode](http://www.kfish.org/boids/pseudocode.html)
 - [Research Paper - Craig Reynold's simulation](http://www.csc.kth.se/utbildning/kandidatexjobb/datateknik/2011/rapport/erneholm_carl-oscar_K11044.pdf)
 
-## Overleaf mathematical model read and edit
+
+## Something Useful
+
+#### Ovreleaf LaTex editor - mathematical modeling
+click [here](https://www.overleaf.com/15649991qxqnpwqzxvjr)
+
+#### Scattering of starling by a predator (a falcon in this case).
+
+A [video](https://www.youtube.com/watch?v=b8eZJnbDHIg) of falcon attack on flock of starling.
+
