@@ -1,5 +1,5 @@
 # Flocking-Simulation
-Flocking simulation of starling murmuration using Javascript.
+Flocking simulation of starling murmuration using web graphics library(webGL) and openGL shader language in javascript.
 
 #### Flocking behavior
 Flocking is a the motion of birds together and flocking behavior is a type of behavior exhibited when a group of birds, called a flock, are in flight.
@@ -8,6 +8,10 @@ Flocking is a the motion of birds together and flocking behavior is a type of be
 Starlings are small to medium-sized passerine birds in the family Sturnidae. It is known as murmuration, when a huge flocks of starling in migration form shape-shifting flight patterns. A good example is shown below - 
 
 ## Mathematical Modeling
+
+#### Ovreleaf LaTex editor
+click [here](https://www.overleaf.com/15649991qxqnpwqzxvjr)
+
 
 #### Scattering of starling by a predator (a falcon in this case).
 
@@ -38,4 +42,3 @@ http-server -c-1
 - [Research Paper - Craig Reynold's simulation](http://www.csc.kth.se/utbildning/kandidatexjobb/datateknik/2011/rapport/erneholm_carl-oscar_K11044.pdf)
 
 ## Overleaf mathematical model read and edit
-[link](https://www.overleaf.com/15649991qxqnpwqzxvjr)
