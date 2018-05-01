@@ -1,8 +1,11 @@
 if ( !Detector.webgl ) Detector.addGetWebGLMessage();
 
-var texture_width = 50;
-var birds = 4000;
-
+var number_of_birds = document.location.hash.substr(1);
+if(number_of_birds){
+	number_of_birds = parseInt(number_of_birds, 0);
+}
+var texture_width = number_of_birds || 50;
+var birds = texture_width;
 
 THREE.BirdGeometry = function () {
 	var shape = birds*3;
@@ -48,3 +51,4 @@ THREE.BirdGeometry = function () {
 	}
 	this.scale( 0.3, 0.3, 0.3);
 };
+THREE.BirdGeometry.prototype = Object.create(THREE.BufferGeometry.prototype );

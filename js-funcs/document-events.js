@@ -18,3 +18,8 @@ function mouse_touch_move(e) {
 		mouse_move_height = e.touches[0].pageY - window_heighthalf;
 	}
 }
+function start_flocking(){
+	requestAnimationFrame(animate);
+	render();
+	stats.update();
+}

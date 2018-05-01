@@ -34,7 +34,7 @@ function initial() {
 
         this.intensity = 2.5;       
         this.distance = 373;
-      initComputeRenderer  this.angle = 1.6;
+        this.angle = 1.6;
         this.exponent = 38;
         
         this.shadowCameraNear = 34;
