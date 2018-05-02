@@ -11,17 +11,33 @@ Starlings are small to medium-sized passerine birds in the family Sturnidae. It 
 
 We have used **GLSL(OpenGL Shading Language)** for bird's position, bird's velocity, bird's geometry and the vertices of bird's geomtery. A shading language is a graphics programming language adapted to programming shader effects. There is a hardware-based parallelization when computing in GPU, which makes the GPU particularly fit to process & render graphics.
 
-**For Fragment-Shader**
+**An Example For Fragment-Shader To Develop an Understanding in Shaders**
 
 ```html
-<script type="x-shader/x-fragment"></script>
+<script id="BoidPositionFragmentShader" type="x-shader/x-fragment"></script>
 ```
+- `type="x-shader/x-fragment"` has no actual use and isn't an official terminology. It is an informal way as shown in many tutorials to use this to inform the code reader that it is a fragment shader program. Browser ignores such tag, which are undefined. We will use it to increase **readability**.
 
-**For Vertex Shader**
-```html
-<script type="x-shader/x-vertex"></script>
+```javascript
+uniform float clock;
+uniform float del_change;
+void main()	{
+	vec2 textcoordi = gl_FragCoord.xy / resolution.xy;
+	vec4 temp_position = texture2D( PositionTexture, textcoordi );
+	vec3 position = temp_position.xyz;
+	vec3 velocity = texture2D( VeloctiyTexture, textcoordi ).xyz;
+
+	float wcoordinate = temp_position.w;
+
+	wcoordinate = mod( ( wcoordinate + del_change*2.0 +
+		length(velocity.xz) * del_change * 3. +
+		max(velocity.y, 0.0) * del_change * 6. ), 50.0 );
+
+	gl_FragColor = vec4( position + velocity * del_change * 15. , wcoordinate );}
 ```
-
+- `gl_FragCoord`, `resolution` and `texture2D` are predefined global variables for fragment coordinates, resolution of window (opened) and the texture lookup function (to get color information about texture), [for more](https://webplatform.github.io/docs/tutorials/webgl_textures/).
+- `uniform` is a qualifier of shader, which can be used in both vertex and fragment shaders. Its **read-only for shaders**. There are other two qualifiers, namely `attribute` and `varying`, [for more](https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying).
+- `vec2`, `vec3`, `vec4` are types in shader for respectively two, three and four coordinate vectors.
 
 ## Folder-Terminology
 
