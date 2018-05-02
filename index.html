@@ -13,7 +13,7 @@
 		</style>
 	</head>
 	<body>
-		<div id="info">
+		<div id="info" style="margin-top: -2%;">
 		 <span id="birds"></span>
 		 </div>
 
@@ -27,9 +27,11 @@
 		<script src="js-libs/KeyboardState.js"></script>
 
 		<!-- fragment shader for bird's position -->
-		<script id="BoidPositionFragmentShader" type="x-shader/x-fragment">
+		<script id="BoidPositionFragmentShader" >
+
 			uniform float clock;
 			uniform float del_change;
+
 			void main()	{
 				vec2 textcoordi = gl_FragCoord.xy / resolution.xy;
 				vec4 temp_position = texture2D( PositionTexture, textcoordi );
@@ -45,7 +47,124 @@
 				gl_FragColor = vec4( position + velocity * del_change * 15. , wcoordinate );}
 		</script>
 
-		<!-- fragment shader for bird's geometry -->
+		<!-- fragment shader for bird's velocity -->
+		<script id="BoidVelocityFragmentShader">
+			uniform float clock;
+			uniform float testing;
+			uniform float del_change;
+			uniform float seperation_distance;
+			uniform float alignment_distance;
+			uniform float cohesion_distance;
+			uniform float freedom_distance;
+			uniform vec3 predator;
+
+			const float width = resolution.x;
+			const float height = resolution.y;
+			const float PI = 3.14159;
+			const float PI_2 = PI * 2.0;
+
+			float zoneRadius = 35.0;
+			float zoneRadiusSquared = zoneRadius*zoneRadius;
+
+			float separationThresh = 0.5;
+			float alignmentThresh = 1.0;
+
+			const float UPPER_bounds = bounds;
+			const float LOWER_bounds = -UPPER_bounds;
+			const float SPEED_LIMIT = 10.0;
+
+			void main() {
+				zoneRadius = seperation_distance + alignment_distance + cohesion_distance;
+				separationThresh = seperation_distance / zoneRadius;
+				alignmentThresh = ( seperation_distance + alignment_distance ) / zoneRadius;
+				zoneRadiusSquared = zoneRadius * zoneRadius;
+
+				vec2 textcoordi = gl_FragCoord.xy / resolution.xy;
+				vec3 birdPosition, birdVelocity;
+
+				vec3 selfPosition = texture2D( PositionTexture, textcoordi ).xyz;
+				vec3 selfVelocity = texture2D( VeloctiyTexture, textcoordi ).xyz;
+
+				float dist;
+				vec3 dir;
+				float distSquared;
+
+				float seperationSquared = seperation_distance * seperation_distance;
+				float cohesionSquared = cohesion_distance * cohesion_distance;
+
+				float f;
+				float percent;
+
+				vec3 velocity = selfVelocity;
+
+				float limit = SPEED_LIMIT;
+
+				dir = predator * UPPER_bounds - selfPosition;
+				dir.z = 0.;
+				dist = length( dir );
+				distSquared = dist * dist;
+
+				float preyRadius = 50.0;
+				float preyRadiusSq = preyRadius * preyRadius;
+
+				if (dist < preyRadius) {
+					f = ( distSquared / preyRadiusSq ) * del_change * 160.;
+					velocity += normalize(dir) * f;
+					limit += 5.0;}
+
+				vec3 central = vec3( 0., 0., 0. );
+				dir = selfPosition - central;
+				dist = length( dir );
+
+				dir.y *= 2.5;
+				velocity -= normalize( dir ) * del_change * 6.;
+
+				for (float y=0.0;y<height;y++) {
+					for (float x=0.0;x<width;x++) {
+						vec2 ref = vec2( x + 0.6, y + 0.6 ) / resolution.xy;
+						birdPosition = texture2D( PositionTexture, ref ).xyz;
+
+						dir = birdPosition - selfPosition;
+						dist = length(dir);
+						if (dist < 0.0001) continue;
+
+						distSquared = dist * dist;
+						if (distSquared > zoneRadiusSquared ) continue;
+
+						percent = distSquared / zoneRadiusSquared;
+						if ( percent < separationThresh ) { 
+							// Separation
+							f = (separationThresh / percent - 1.0) * del_change;
+							velocity -= normalize(dir) * f;
+						} else if ( percent < alignmentThresh ) {
+							// Alignment
+							float threshold = alignmentThresh - separationThresh;
+							float adjustedPercent = ( percent - separationThresh ) / threshold;
+
+							birdVelocity = texture2D( VeloctiyTexture, ref ).xyz;
+
+							f = ( 0.5 - cos( adjustedPercent * PI_2 ) * 0.5 + 0.5 ) * del_change;
+							velocity += normalize(birdVelocity) * f;
+						} else {
+							// Attraction
+							float threshold = 1.0 - alignmentThresh;
+							float adjustedPercent = ( percent - alignmentThresh ) / threshold;
+
+							f = ( 0.5 - ( cos( adjustedPercent * PI_2 ) * -0.5 + 0.5 ) ) * del_change;
+
+							velocity += normalize(dir) * f;
+						}
+					}
+				}
+				if ( length( velocity ) > limit ) {
+					velocity = normalize( velocity ) * limit;
+				}
+
+				gl_FragColor = vec4( velocity, 1.0 );
+			}
+		</script>
+
+		<!-- fragment shader for bird's geometry-->
 		<script id="BoidGeometryFragmentShader">
 			varying vec4 vertex_color;
 			varying float zcoordi;
@@ -55,7 +174,7 @@
 				gl_FragColor = vec4( z, z, z, 1. );}
 		</script>
 
-		<!-- vertex shader for bird's position -->
+		<!-- vertex shader for bird's vertex -->
 		<script id="BoidVertexShader">
 			uniform float clock;
 
@@ -103,8 +222,8 @@
 			}
 		</script>
 
-		<!-- Main script -->
 
+		<!-- Main script -->
 		<script>
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -167,6 +286,284 @@
 				}
 				this.scale( 0.35, 0.35, 0.35 );
 			};
-			</script>
+
+			THREE.BirdGeometry.prototype = Object.create( THREE.BufferGeometry.prototype );
+
+			var half_resolution_windowX = window.innerWidth / 2;
+			var half_resolution_windowY = window.innerHeight / 2;
+
+			var bounds = 500, bounds_HALF = bounds / 2;
+
+			document.getElementById('birds').innerText = birds;
+			function change(n) {
+				location.hash = n;
+				location.reload();
+				return false;
+			}
+
+			var last = performance.now();
+
+			var gpu_allocation; 
+			var velocity_variable; 
+			var position_variable; 
+			var uniform_position; 
+			var uniform_velocity; 
+			var uniform_bird; 
+
+			var container, stats;
+			var camera, scene, renderer, geometry, i, h, color;
+			var mouseX = 0, mouseY = 0;
+
+			init();
+			animate();
+
+			function init() {
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x87ceeb);
+				scene.fog = new THREE.Fog( 0x87ceeb, 100, 1000 );
+
+			    renderer = new THREE.WebGLRenderer({antialias:true});
+		        renderer.setClearColor(0x66C2FF);
+		        renderer.setSize(window.innerWidth, window.innerHeight);
+		        renderer.shadowMapEnabled= true;
+		        renderer.shadowMapSoft = true;
+				
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+			    controls.addEventListener( 'change', render );
+			                
+			    camera.position.x = 600;
+			    camera.position.y = 600;
+			    camera.position.z = 600; 
+			    camera.lookAt(scene.position);
+
+		        guiControls = new function(){
+		            this.rotationX  = 0.0;
+		            this.rotationY  = 0.0;
+		            this.rotationZ  = 0.0;
+		            this.lightX = 19;
+		            this.lightY = 47;
+		            this.lightZ = 19;
+		            this.intensity = 2.5;       
+		            this.distance = 373;
+		            this.angle = 1.6;
+		            this.exponent = 38;
+		            this.shadowCameraNear = 34;
+		            this.shadowCameraFar = 2635;
+		            this.shadowCameraFov = 68;
+		            this.shadowCameraVisible=false;
+		            this.shadowMapWidth=512;
+		            this.shadowMapHeight=512;
+		            this.shadowBias=0.00;
+		            this.shadowDarkness=0.11;       
+		        }
+
+		        spotLight = new THREE.SpotLight(0xffffff);
+		        spotLight.castShadow = true;
+		        spotLight.position.set (20, 35, 40);
+		        spotLight.intensity = guiControls.intensity;        
+		        spotLight.distance = guiControls.distance;
+		        spotLight.angle = guiControls.angle;
+		        spotLight.exponent = guiControls.exponent;
+		        spotLight.shadowCameraNear = guiControls.shadowCameraNear;
+		        spotLight.shadowCameraFar = guiControls.shadowCameraFar;
+		        spotLight.shadowCameraFov = guiControls.shadowCameraFov;
+		        spotLight.shadowCameraVisible = guiControls.shadowCameraVisible;
+		        spotLight.shadowBias = guiControls.shadowBias;
+		        spotLight.shadowDarkness = guiControls.shadowDarkness;
+		        
+		        scene.add(spotLight);
+				container.appendChild( renderer.domElement );
+				initComputeRenderer();
+
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+				// var gui = new dat.GUI();
+
+
+				var controller_variables = { seperation: 20.0, alignment: 30.0, cohesion: 20.0, freedom: 0.3 };
+
+				var new_values_update = function() {
+					uniform_velocity.seperation_distance.value = controller_variables.seperation;
+					uniform_velocity.alignment_distance.value = controller_variables.alignment;
+					uniform_velocity.cohesion_distance.value = controller_variables.cohesion;
+					uniform_velocity.freedom_distance.value = controller_variables.freedom;
+				};
+				new_values_update();
+				
+				// gui.add( controller_variables, "seperation", 0.0, 100.0, 1.0 ).onChange( new_values_update );
+				// gui.add( controller_variables, "alignment", 0.0, 100, 0.001 ).onChange( new_values_update );
+				// gui.add( controller_variables, "cohesion", 0.0, 100, 0.025 ).onChange( new_values_update );
+				// gui.close();
+
+				initBirds();
+			}
+
+			function initComputeRenderer() {
+				gpu_allocation = new GPUComputationRenderer( argumentHash, argumentHash, renderer );
+
+				var dtPosition = gpu_allocation.createTexture();
+				var dtVelocity = gpu_allocation.createTexture();
+				fillPositionTexture( dtPosition );
+				fillVelocityTexture( dtVelocity );
+
+				velocity_variable = gpu_allocation.addVariable( "VeloctiyTexture", document.getElementById( 'BoidVelocityFragmentShader' ).textContent, dtVelocity );
+				position_variable = gpu_allocation.addVariable( "PositionTexture", document.getElementById( 'BoidPositionFragmentShader' ).textContent, dtPosition );
+
+				gpu_allocation.setVariableDependencies( velocity_variable, [ position_variable, velocity_variable ] );
+				gpu_allocation.setVariableDependencies( position_variable, [ position_variable, velocity_variable ] );
+
+				uniform_position = position_variable.material.uniforms;
+				uniform_velocity = velocity_variable.material.uniforms;
+
+				uniform_position.clock = { value: 0.0 };
+				uniform_position.del_change = { value: 0.0 };
+				uniform_velocity.clock = { value: 1.0 };
+				uniform_velocity.del_change = { value: 0.0 };
+				uniform_velocity.testing = { value: 1.0 };
+				uniform_velocity.seperation_distance = { value: 1.0 };
+				uniform_velocity.alignment_distance = { value: 1.0 };
+				uniform_velocity.cohesion_distance = { value: 1.0 };
+				uniform_velocity.freedom_distance = { value: 1.0 };
+				uniform_velocity.predator = { value: new THREE.Vector3() };
+				velocity_variable.material.defines.bounds = bounds.toFixed( 2 );
+
+				velocity_variable.wrapS = THREE.RepeatWrapping;
+				velocity_variable.wrapT = THREE.RepeatWrapping;
+				position_variable.wrapS = THREE.RepeatWrapping;
+				position_variable.wrapT = THREE.RepeatWrapping;
+
+				var error = gpu_allocation.init();
+				if ( error !== null ) {
+				    console.error( error );
+				}
+			}
+
+			function initBirds() {
+				var geometry = new THREE.BirdGeometry();
+
+				// For Vertex and Fragment
+				uniform_bird = {
+					color: { value: new THREE.Color( 0xff2200 ) },
+					PositionTexture: { value: null },
+					VeloctiyTexture: { value: null },
+					clock: { value: 1.0 },
+					del_change: { value: 0.0 }
+				};
+
+				// ShaderMaterial
+				var material = new THREE.ShaderMaterial( {
+					uniforms:       uniform_bird,
+					vertexShader:   document.getElementById( 'BoidVertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'BoidGeometryFragmentShader' ).textContent,
+					side: THREE.DoubleSide
+
+				});
+
+				var birdMesh = new THREE.Mesh( geometry, material );
+				birdMesh.rotation.y = Math.PI / 2;
+				birdMesh.matrixAutoUpdate = false;
+				birdMesh.updateMatrix();
+
+				scene.add(birdMesh);
+			}
+
+			function fillPositionTexture( texture ) {
+
+				var theArray = texture.image.data;
+
+				for ( var k = 0, kl = theArray.length; k < kl; k += 4 ) {
+
+					var x = Math.random() * 100 ;
+					var y = Math.random() * 100;
+					var z = Math.random() * 100;
+
+					theArray[ k + 0 ] = x;
+					theArray[ k + 1 ] = y;
+					theArray[ k + 2 ] = z;
+					theArray[ k + 3 ] = 1;
+				}
+			}
+
+			function fillVelocityTexture( texture ) {
+				var theArray = texture.image.data;
+
+				for ( var k = 0, kl = theArray.length; k < kl; k += 4 ) {
+					var x = Math.random() - 0.5;
+					var y = Math.random() - 0.5;
+					var z = Math.random() - 0.5;
+
+					theArray[ k + 0 ] = x * 10;
+					theArray[ k + 1 ] = y * 10;
+					theArray[ k + 2 ] = z * 10;
+					theArray[ k + 3 ] = 1;
+				}
+			}
+
+			function onDocumentMouseMove( event ) {
+				mouseX = event.clientX - half_resolution_windowX;
+				mouseY = event.clientY - half_resolution_windowY;
+			}
+
+			function onDocumentTouchStart( event ) {
+				if ( event.touches.length === 1 ) {
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - half_resolution_windowX;
+					mouseY = event.touches[ 0 ].pageY - half_resolution_windowY;
+				}
+			}
+
+			function onDocumentTouchMove( event ) {
+				if ( event.touches.length === 1 ) {
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - half_resolution_windowX;
+					mouseY = event.touches[ 0 ].pageY - half_resolution_windowY;
+				}
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				stats.update();
+			}
+
+			function render() {
+				var now = performance.now();
+				var del_change = (now - last) / 1000;
+
+				if (del_change > 1) del_change = 1; // safety cap on large del_changes
+				last = now;
+
+				uniform_position.clock.value = now;
+				uniform_position.del_change.value = del_change;
+				uniform_velocity.clock.value = now;
+				uniform_velocity.del_change.value = del_change;
+				uniform_bird.clock.value = now;
+				uniform_bird.del_change.value = del_change;
+
+				uniform_velocity.predator.value.set( 0.5 * mouseX / half_resolution_windowX, - 0.5 * mouseY / half_resolution_windowY, 0 );
+
+				mouseX = 10000;
+				mouseY = 10000;
+
+				gpu_allocation.compute();
+
+				uniform_bird.PositionTexture.value = gpu_allocation.getCurrentRenderTarget( position_variable ).texture;
+				uniform_bird.VeloctiyTexture.value = gpu_allocation.getCurrentRenderTarget( velocity_variable ).texture;
+
+				renderer.render( scene, camera );
+			}
+		</script>
 	</body>
 </html>
