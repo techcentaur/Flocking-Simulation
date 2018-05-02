@@ -73,6 +73,18 @@ for (var i = 0; i < birds; i++ ) {
 		0, 0, -4); //right wing call
 }
 ```
+- Here is a part of `THREE.BirdGeometry` for initiating the function call, and showing its usage for some more variables and attributes.
+
+```javascript
+THREE.BirdGeometry = function () {
+
+THREE.BufferGeometry.call(this);
+
+var vertices = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
+
+this.addAttribute( 'position', vertices );
+```
+- `THREE.BufferAttribute` stores data for an attribute associated with a BufferGeometry, [for more](https://threejs.org/docs/#api/core/BufferAttribute).
 
 ## Folder-Terminology
 
