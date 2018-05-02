@@ -1,5 +1,7 @@
-# Flocking-Simulation
-Flocking simulation of starling murmuration using web graphics library(webGL) and openGL shader language in javascript.
+# Starling-Simulation
+Flocking simulation of starling murmuration using web graphics library (webGL) and openGL shader language in javascript.
+
+> **Checkout the [demo](https://techcentaur.github.io/Starling-Simulation/index.html#64) here**
 
 #### Flocking behavior
 Flocking is a the motion of birds together and flocking behavior is a type of behavior exhibited when a group of birds, called a flock, are in flight.
@@ -133,9 +135,11 @@ scene.add(spotLight);
 
 ## Folder-Terminology
 
-- **js-libs**: The static javascript library files from three.js and some from webGL-js.
-- **js-func**: The functions in javascript used in the program.
+- **js-libs**: Static javascript library files from three.js and some from webGL-js.
+- **js-func**: Functions in javascript used in the program.
+- **buffer**: Contains the buffer vertex shader program
 - **shader**: Shader programs are the ones that are compiled in graphical processing unit.
+- **laTex**: Mathematical modeling in LaTex.
 - **css**: Used CSS stylesheets in the markup code.
 - **img**: Images that shall be used in the front-end code.
 
@@ -187,4 +191,4 @@ scene.add(spotLight);
 Found a bug or have a suggestion? Feel free to create an issue or make a pull request!
 
 ## Know the Developer
-- Ask him out for a cup of coffee (preferably female gender), find the blog [here](https://techcentaur.github.io/space/).
+- Ask him out for a cup of coffee (preferably female gender), find his blog [here](https://techcentaur.github.io/space/).
