@@ -94,7 +94,7 @@ this.addAttribute( 'position', vertices );
 - **css**: Used CSS stylesheets in the markup code.
 - **img**: Images that shall be used in the front-end code.
 
-## Running locally
+## Running Locally
 
 - Just run the `index.html` file, having the embedded javascript files in it.
 
@@ -138,3 +138,8 @@ this.addAttribute( 'position', vertices );
 - Overleaf LaTex editor - mathematical modeling, click [here](https://www.overleaf.com/15649991qxqnpwqzxvjr)
 - A [video](https://www.youtube.com/watch?v=b8eZJnbDHIg) of falcon attack on flock of starling.
 
+## Contributing
+Found a bug or have a suggestion? Feel free to create an issue or make a pull request!
+
+## Know the Developer
+- Ask him out for a cup of coffee (preferably female gender), find the blog [here](https://techcentaur.github.io/space/).
