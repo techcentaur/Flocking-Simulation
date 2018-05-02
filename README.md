@@ -112,9 +112,16 @@ this.addAttribute( 'position', vertices );
 	http-server -c-1
 
 	```
+## Points of Improvement
+
+- The 3D sky can be made much better with clouds (as a shader program). It is looking dull with a single color, I found this [repo](https://github.com/mattatz/THREE.Cloud) of clouds, give it a view.
+
+- Bird's shapes are very basic, it can be made more realistic if [Blender](https://www.blender.org/) is used to export 3D bird-object to JSON, which then can be used as a material in `Three.BirdGeometry`.
+
+- Actual predator can be introduced, for simulation of falcon attack in a starling murmuration. I tried making it with **mouse pointer**, but due to the 3D camera textures, it is unintuitive to guess the proper algorithm, although mine works when birds are close to moving mouse but I am uncertain about its usage.
+
 
 ## Thanks to
-
 - Thanks for the [three.js](https://github.com/mrdoob/three.js/) Javascript 3D library and the examples.
 
 - This [project](https://github.com/OwenMcNaughton/Boids.js) by OwenMcNaughton for camera, scene, and 3D-viewpoint support.
