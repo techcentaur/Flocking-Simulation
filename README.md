@@ -39,9 +39,9 @@ void main()	{
 - `uniform` is a qualifier of shader, which can be used in both vertex and fragment shaders. Its **read-only for shaders**. There are other two qualifiers, namely `attribute` and `varying`, [for more](https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying).
 - `vec2`, `vec3`, `vec4` are types in shader for respectively two, three and four coordinate vectors.
 
-## Structures
+## Structures in Simulation
 
-### Boid Geometry
+### Boid Geometry Implementation
 - The boid implemented here is a **combination of 3 triangles**, one acting as a _body_ (whose one angle is very small, i.e., making it look like actual body, additional features at end), and the other 2 acting as _wings_, which we will be using while flapping.
 
 ![Boid Implementation](img/boid1.png)
@@ -85,6 +85,44 @@ var vertices = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
 this.addAttribute( 'position', vertices );
 ```
 - `THREE.BufferAttribute` stores data for an attribute associated with a BufferGeometry, [for more](https://threejs.org/docs/#api/core/BufferAttribute).
+
+- Function to initiate birds is named as `initBirds()`, it renders vertex and fragment, and shader material and then creates an object of `THREE.Mesh(geometry, material)`.
+```javascript
+var birdMesh = new THREE.Mesh( geometry, material );
+```
+### Creating a Rotating 3D Frame with Orbital Controls.
+
+- This is a brief version of the code, with comments to increase understandibility, used to **create 3D frame** with **orbital controls**.
+
+- `guiControls()` is an important function for 3D frame setting, it includes the initial setting of **rotation**, **light**, **intensity**, **angle** and a lot of **shadow** variables.
+
+```javascript
+<!-- create a perspective camera -->
+camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+
+<!-- create a scene on available canvas with some background(optional)-->
+scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x87ceeb);
+
+<!-- rendering the crafted scenes and displaying on canvas -->
+renderer = new THREE.WebGLRenderer({});
+
+<!-- setting up the object for orbit control -->
+controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.addEventListener( 'change', render );
+
+<!-- initiating the camera position -->
+camera.position.x = 500;
+camera.lookAt(scene.position);
+
+<!-- Initiating the GUI controls for rotation, light, intensity, angle, shadow and exponent -->
+guiControls = new function(){
+}
+
+<!-- Creating object for spotlight and adding to scence-->
+spotLight = new THREE.SpotLight(0xffffff);
+scene.add(spotLight);
+```
 
 ## Folder-Terminology
 
