@@ -16,7 +16,7 @@ We have used **GLSL(OpenGL Shading Language)** for bird's position, bird's veloc
 ```html
 <script id="BoidPositionFragmentShader" type="x-shader/x-fragment"></script>
 ```
-- `type="x-shader/x-fragment"` has no actual use and isn't an official terminology. It is an informal way as shown in many tutorials to use this to inform the code reader that it is a fragment shader program. Browser ignores such tag, which are undefined. We will use it to increase **readability**.
+- `type="x-shader/x-fragment"` has no actual use and isn't an official terminology. It is an informal way as shown in many tutorials to use this to inform the code reader that it is a fragment shader program. Browser ignores such tag, which are undefined. We will avoid it to reduce confusion, and instead use comments to increase **readability**.
 
 ```javascript
 uniform float clock;
@@ -38,6 +38,41 @@ void main()	{
 - `gl_FragCoord`, `resolution` and `texture2D` are predefined global variables for fragment coordinates, resolution of window (opened) and the texture lookup function (to get color information about texture), [for more](https://webplatform.github.io/docs/tutorials/webgl_textures/).
 - `uniform` is a qualifier of shader, which can be used in both vertex and fragment shaders. Its **read-only for shaders**. There are other two qualifiers, namely `attribute` and `varying`, [for more](https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying).
 - `vec2`, `vec3`, `vec4` are types in shader for respectively two, three and four coordinate vectors.
+
+## Structures
+
+### Boid Geometry
+- The boid implemented here is a **combination of 3 triangles**, one acting as a _body_ (whose one angle is very small, i.e., making it look like actual body, additional features at end), and the other 2 acting as _wings_, which we will be using while flapping.
+
+![Boid Implementation](img/boid1.png)
+
+- **vertex_append** function takes a list of argument and then appends it in the `BufferAttribute` of `Float32Array`.
+
+```javascript
+function vertex_append() {
+	for (var i = 0; i < arguments.length; i++) {
+		vertices.array[v++] = arguments[i];
+	}
+}
+```
+- Here is how we define the boid's body. The calls of `vertex_append` function are in order as body, left wing and right wing.
+
+```javascript
+for (var i = 0; i < birds; i++ ) {
+	vertex_append(
+		0, -0, -6,
+		0, 1, -15,
+		0, 0, 8); //body call
+	vertex_append(
+		0, 0, -4,
+		-6, 0, 0,
+		0, 0, 4); //left wing call
+	vertex_append(
+		0, 0, 4,
+		6, 0, 0,
+		0, 0, -4); //right wing call
+}
+```
 
 ## Folder-Terminology
 
