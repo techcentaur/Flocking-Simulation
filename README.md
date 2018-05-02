@@ -42,6 +42,7 @@ void main()	{
 ## Structures in Simulation
 
 ### Boid Geometry Implementation
+---
 - The boid implemented here is a **combination of 3 triangles**, one acting as a _body_ (whose one angle is very small, i.e., making it look like actual body, additional features at end), and the other 2 acting as _wings_, which we will be using while flapping.
 
 ![Boid Implementation](img/boid1.png)
@@ -86,12 +87,13 @@ this.addAttribute( 'position', vertices );
 ```
 - `THREE.BufferAttribute` stores data for an attribute associated with a BufferGeometry, [for more](https://threejs.org/docs/#api/core/BufferAttribute).
 
-- Function to initiate birds is named as `initBirds()`, it renders vertex and fragment, and shader material and then creates an object of `THREE.Mesh(geometry, material)`.
+- Function to initiate birds is named as `initBirds()`, it renders vertex and fragment, and shader material and then creates an object of `THREE.Mesh` as -
 ```javascript
 var birdMesh = new THREE.Mesh( geometry, material );
 ```
-### Creating a Rotating 3D Frame with Orbital Controls.
 
+### Creating a Rotating 3D Frame with Orbital Controls
+---
 - This is a brief version of the code, with comments to increase understandibility, used to **create 3D frame** with **orbital controls**.
 
 - `guiControls()` is an important function for 3D frame setting, it includes the initial setting of **rotation**, **light**, **intensity**, **angle** and a lot of **shadow** variables.
@@ -123,6 +125,11 @@ guiControls = new function(){
 spotLight = new THREE.SpotLight(0xffffff);
 scene.add(spotLight);
 ```
+### Importance of `requestAnimationFrame()`
+---
+- It allows you to execute code on the next available screen repaint, taking the guess work out of **getting in sync** with the user's browser and hardware readiness to make changes to the screen.
+
+- Code running inside background tabs in your browser are either paused or slowed down significantly (to 2 frames per second or less) automatically to further **save user system resources**.
 
 ## Folder-Terminology
 
