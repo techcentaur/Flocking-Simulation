@@ -3,6 +3,8 @@ Flocking simulation of starling murmuration using web graphics library (webGL) a
 
 > **Checkout the [demo](https://techcentaur.github.io/Starling-Simulation/index.html#64) here**
 
+![Flocking Simulation](img/flocking.png)
+
 #### Flocking behavior
 Flocking is a the motion of birds together and flocking behavior is a type of behavior exhibited when a group of birds, called a flock, are in flight.
 
@@ -127,11 +129,51 @@ guiControls = new function(){
 spotLight = new THREE.SpotLight(0xffffff);
 scene.add(spotLight);
 ```
+
+### Algorithm of Separation, Cohesion, and Alignment.
+
+**Separation**
+- `distSquared` is the square of distance between the current position of canvas texture rendered ( at that time ) and each point on resolution window ( for boids ).
+- We shall add a velocity vector away from the velocity.now, with change proportional to the rendering time ( del_change ) and the amount any boid is closer to some other boid on the old texture.
+- `zoneRadiusSquared` is a design choice, we set its value to 35.0 ( a hit and trial technique ).
+
+```javascript
+percent = distSquared / zoneRadiusSquared;
+if ( percent < separationThresh ) { 
+	f = (separationThresh / percent - 1.0) * del_change;
+	velocity -= normalize(dir) * f;
+}
+```
+
+**Alignment**
+
+- We deal with alignment by creating a reference direction and then adjusting it using trignometric function with change proportional to the rendering time.
+
+```javascript
+else if{
+float adjustedPercent = ( percent - separationThresh ) / (alignmentThresh - separationThresh);
+birdVelocity = texture2D( VeloctiyTexture, ref ).xyz;
+f = ( 0.5 - cos( adjustedPercent * PI_2 ) * 0.5 + 0.5 ) * del_change;
+velocity += normalize(birdVelocity) * f;
+}
+```
+
+**Cohesion**
+
+- Similar to aligment, we normalise the change and add in velocity vector.
+```javascript
+else {
+float adjustedPercent = ( percent - alignmentThresh ) / (1.0 - alignmentThresh);
+f = ( 0.5 - ( cos( adjustedPercent * PI_2 ) * -0.5 + 0.5 ) ) * del_change;
+velocity += normalize(dir) * f;
+}
+```
 ### Importance of `requestAnimationFrame()`
 ---
 - It allows you to execute code on the next available screen repaint, taking the guess work out of **getting in sync** with the user's browser and hardware readiness to make changes to the screen.
 
 - Code running inside background tabs in your browser are either paused or slowed down significantly (to 2 frames per second or less) automatically to further **save user system resources**.
+
 
 ## Folder-Terminology
 
